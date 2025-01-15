@@ -1,111 +1,43 @@
 <?php
-namespace Youdemy;
 
-use Youdemy\Connection\Database;
-use PDO;
+    include_once __DIR__ .'./../config/db.php';
 
-class Utilisateur
-{
-    private $id;
-    private $nom;
-    private $email;
-    private $password;
-    private $role;
+    class Categorie{
+        private int $id;
+        private string $name;
+        private string $description;
+        private string $date;
+        private $database;
 
-    public function __construct($nom, $email, $password, $role)
-    {
-        $this->nom = $nom;
-        $this->email = $email;
-        $this->password = $password;
-        $this->role = $role;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    public function getEmail()
-    {
-        return $this->email;
-    }
-
-    public function getPassword()
-    {
-        return $this->password;
-    }
-
-    public function getRole()
-    {
-        return $this->role;
-    }
-
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-    }
-
-    public function setEmail($email)
-    {
-        $this->email = $email;
-    }
-
-    public function setPassword($password)
-    {
-        $this->password = $password;
-    }
-
-    public function setRole($role)
-    {
-        $this->role = $role;
-    }
-
-    public function authenticate($email, $password)
-    {
-        // Implement authentication logic here
-        // Return true if the email and password match
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("SELECT * FROM Utilisateur WHERE email = :email");
-        $stmt->bindParam(':email', $email);
-        $stmt->execute();
-
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($password, $user['password'])) {
-            $this->id = $user['id_utilisateur'];
-            $this->nom = $user['nom'];
-            $this->email = $user['email'];
-            $this->password = $user['password'];
-            $this->role = $user['role'];
-            return true;
+        public function __construct(){
+            $this->database = Database::getInstance()->getConnection();
         }
 
-        return false;
-    }
 
-    public function save()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("INSERT INTO Utilisateur (nom, email, password, role) VALUES (:nom, :email, :password, :role)");
-        $stmt->bindParam(':nom', $this->nom);
-        $stmt->bindParam(':email', $this->email);
-        $stmt->bindParam(':password', password_hash($this->password, PASSWORD_DEFAULT));
-        $stmt->bindParam(':role', $this->role);
-
-        if ($stmt->execute()) {
-            $this->id = $conn->lastInsertId();
-            return true;
+        // GETTERS
+        public function getId(): int{
+            return $this->id;
+        }
+        public function getName(): string{
+            return $this->name;
+        }
+        public function getDescription(): string{
+            return $this->description;
+        }
+        public function getDate(): string{
+            return $this->date;
         }
 
-        return false;
+
+        // SETTERS
+        public function setName(string $name){
+            $this->name = $name;
+        }
+        public function setDescription(string $description){
+            $this->description = $description;
+        }
+        public function setDate(string $date){
+            $this->date = $date;
+        }
+
     }
-}
