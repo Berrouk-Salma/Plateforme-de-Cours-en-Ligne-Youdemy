@@ -1,130 +1,70 @@
 <?php
-namespace Youdemy;
 
-use Youdemy\Connection\Database;
-use PDO;
+    require_once __DIR__ .'./../config/Connection.php';
 
-class Cours
-{
-    private $id;
-    private $title;
-    private $description;
-    private $contenu;
-    private $categorieId;
-    private $enseignantId;
+    class Cours {
+        private int $id;
+        private string $titre;
+        private string $description;
+        private string $couverture;
+        private string $contenu;
+        private string $video;
+        private string $status;
+        private string $date;
+        private $database;
 
-    public function __construct($title, $description, $contenu, $categorieId, $enseignantId)
-    {
-        $this->title = $title;
-        $this->description = $description;
-        $this->contenu = $contenu;
-        $this->categorieId = $categorieId;
-        $this->enseignantId = $enseignantId;
-    }
-
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function setId($id)
-    {
-        $this->id = $id;
-    }
-
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    public function getContenu()
-    {
-        return $this->contenu;
-    }
-
-    public function setContenu($contenu)
-    {
-        $this->contenu = $contenu;
-    }
-
-    public function getCategorieId()
-    {
-        return $this->categorieId;
-    }
-
-    public function setCategorieId($categorieId)
-    {
-        $this->categorieId = $categorieId;
-    }
-
-    public function getEnseignantId()
-    {
-        return $this->enseignantId;
-    }
-
-    public function setEnseignantId($enseignantId)
-    {
-        $this->enseignantId = $enseignantId;
-    }
-
-    public function save()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("INSERT INTO Cours (title, description, contenu, categorie_id, enseignant_id) VALUES (:title, :description, :contenu, :categorie_id, :enseignant_id)");
-        $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':contenu', $this->contenu);
-        $stmt->bindParam(':categorie_id', $this->categorieId);
-        $stmt->bindParam(':enseignant_id', $this->enseignantId);
-
-        if ($stmt->execute()) {
-            $this->id = $conn->lastInsertId();
-            return true;
+        public function __construct() {
+            $this->database = Database::getInstance()->getConnection();
         }
 
-        return false;
+        // GETTERS
+        public function getId():int{
+            return $this->id;
+        }
+        public function getTitre():string{
+            return $this->titre;
+        }
+        public function getDescription():string{
+            return $this->description;
+        }
+        public function getContenu():string{
+            return $this->contenu;
+        }
+        public function getVideo():string{
+            return $this->video;
+        }
+        public function getCouvertur():string{
+            return $this->couverture;
+        }
+        public function getStatus():string{
+            return $this->status;
+        }
+        public function getDate():string{
+            return $this->date;
+        }
+
+        // SETTERS
+        public function setTitre($titre):void{
+            $this->titre = $titre;
+        }
+        public function setDescription($description):void{
+            $this->description = $description;
+        }
+        public function setContenu($contenu):void{
+            $this->contenu = $contenu;
+        }
+        public function setVideo($video):void{
+            $this->video = $video;
+        }
+        public function setCouverture($couverture):void{
+            $this->couverture = $couverture;
+        }
+        public function setStatus($status):void{
+            $this->status = $status;
+        }
+        public function setDate($date):void{
+            $this->date = $date;
+        }
+
+        
     }
-
-    public function update()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("UPDATE Cours SET title = :title, description = :description, contenu = :contenu, categorie_id = :categorie_id WHERE id_cours = :id");
-        $stmt->bindParam(':title', $this->title);
-        $stmt->bindParam(':description', $this->description);
-        $stmt->bindParam(':contenu', $this->contenu);
-        $stmt->bindParam(':categorie_id', $this->categorieId);
-        $stmt->bindParam(':id', $this->id);
-
-        return $stmt->execute();
-    }
-
-    public function delete()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("DELETE FROM Cours WHERE id_cours = :id");
-        $stmt->bindParam(':id', $this->id);
-
-        return $stmt->execute();
-    }
-}
