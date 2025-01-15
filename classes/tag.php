@@ -1,70 +1,29 @@
 <?php
-namespace Youdemy;
 
-use Youdemy\Connection\Database;
-use PDO;
+    require_once __DIR__ . './../config/Connection.php';
+    class Tag {
+        private $id;
+        private $nom;
 
-class Tag
-{
-    private $id;
-    private $nom;
+        private $database;
 
-    public function __construct($nom)
-    {
-        $this->nom = $nom;
-    }
+        public function __construct() {
+            $this->database = Database::getInstance()->getConnection();
+        }    
 
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    public function getNom()
-    {
-        return $this->nom;
-    }
-
-    public function setNom($nom)
-    {
-        $this->nom = $nom;
-    }
-
-    public function save()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("INSERT INTO Tags (nom) VALUES (:nom)");
-        $stmt->bindParam(':nom', $this->nom);
-
-        if ($stmt->execute()) {
-            $this->id = $conn->lastInsertId();
-            return true;
+        // Getters
+        public function getId() {
+            return $this->id;
+        }
+        public function getNom() {
+            return $this->nom;
         }
 
-        return false;
+        // Setters
+        public function setNom($nom) {
+            $this->nom = $nom;
+        }
+
+
+        
     }
-
-    public function update()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("UPDATE Tags SET nom = :nom WHERE id_tag = :id");
-        $stmt->bindParam(':nom', $this->nom);
-        $stmt->bindParam(':id', $this->id);
-
-        return $stmt->execute();
-    }
-
-    public function delete()
-    {
-        $db = new Database();
-        $conn = $db->getConnection();
-
-        $stmt = $conn->prepare("DELETE FROM Tags WHERE id_tag = :id");
-        $stmt->bindParam(':id', $this->id);
-
-        return $stmt->execute();
-    }
-}
