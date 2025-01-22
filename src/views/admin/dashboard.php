@@ -91,6 +91,11 @@ try {
   });
 
   $categories = Category::getAllCategoriesWithStats();
+
+  // Get pending courses
+  
+  $courseModel = new Course(null, null, null, null, null, null, null);
+  $pendingCourses = $courseModel->getCoursesByStatus('en_attente');
 } catch (Exception $e) {
   die("Erreur: " . $e->getMessage());
 }
@@ -129,25 +134,19 @@ if (isset($_SESSION['message'])) {
           <!-- Logo et liens de navigation -->
           <div class="flex">
             <div class="flex-shrink-0 flex items-center">
-              <img class="h-10 w-auto" src="/path/to/your/logo.png" alt="Youdemy">
+              <h2 class="text-xl ">Youdemy</h2>
             </div>
             <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
               <a href="#" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                 <i class="fas fa-chart-line mr-2"></i>
                 Tableau de Bord
               </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
-                <i class="fas fa-users mr-2"></i>
-                Utilisateurs
-              </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
+          
+              <a href="all_courses.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
                 <i class="fas fa-graduation-cap mr-2"></i>
                 Cours
               </a>
-              <a href="#" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
-                <i class="fas fa-folder mr-2"></i>
-                Catégories
-              </a>
+            
               <a href="gestionTag.php" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200">
                 <i class="fas fa-folder mr-2"></i>
                 Tags
@@ -155,29 +154,11 @@ if (isset($_SESSION['message'])) {
             </div>
           </div>
 
-          <!-- Section droite avec recherche, notifications et profil -->
           <div class="hidden sm:ml-6 sm:flex sm:items-center">
-            <!-- Barre de recherche -->
-            <div class="flex-1 flex justify-center px-2 lg:ml-6 lg:justify-end">
-              <div class="max-w-lg w-full lg:max-w-xs">
-                <label for="search" class="sr-only">Rechercher</label>
-                <div class="relative">
-                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i class="fas fa-search text-gray-400"></i>
-                  </div>
-                  <input id="search" name="search" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Rechercher..." type="search">
-                </div>
-              </div>
-            </div>
+        
 
-            <!-- Bouton notifications -->
-            <button class="bg-white p-2 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 relative">
-              <span class="sr-only">Notifications</span>
-              <i class="fas fa-bell text-xl"></i>
-              <span class="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-400"></span>
-            </button>
+          
 
-            <!-- Menu profil -->
             <div class="ml-3 relative">
               <div class="flex items-center">
                 <button type="button" class="bg-white flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 items-center" id="user-menu-button" aria-expanded="false" aria-haspopup="true" onclick="toggleProfileDropdown()">
@@ -187,23 +168,17 @@ if (isset($_SESSION['message'])) {
                   <i class="fas fa-chevron-down ml-2 text-gray-400"></i>
                 </button>
               </div>
-              <!-- Menu déroulant du profil -->
               <div id="profile-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu">
-                <!-- <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
-                  <i class="fas fa-user mr-2"></i>
-                  Mon Profil
-                </a>
-               -->
+            
                 <hr class="my-1">
-                <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50" role="menuitem" onclick="return confirm('Êtes-vous sûr de vouloir vous déconnecter ?');">
-    <i class="fas fa-sign-out-alt mr-2"></i>
-    Déconnexion
-</a>
+                                  <a href="../auth/logout.php" class="block px-4 py-2 text-sm text-red-700 hover:bg-red-50" role="menuitem" onclick="return confirm('Êtes-vous sûr de vouloir vous déconnecter ?');">
+                      <i class="fas fa-sign-out-alt mr-2"></i>
+                      Déconnexion
+                  </a>
               </div>
             </div>
           </div>
 
-          <!-- Bouton menu mobile -->
           <div class="flex items-center sm:hidden">
             <button type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500" aria-controls="mobile-menu" aria-expanded="false" onclick="toggleMobileMenu()">
               <span class="sr-only">Open main menu</span>
@@ -213,25 +188,18 @@ if (isset($_SESSION['message'])) {
         </div>
       </div>
 
-      <!-- Menu mobile -->
       <div class="sm:hidden hidden" id="mobile-menu">
         <div class="pt-2 pb-3 space-y-1">
           <a href="#" class="bg-indigo-50 border-indigo-500 text-indigo-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
             <i class="fas fa-chart-line mr-2"></i>
             Tableau de Bord
           </a>
-          <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-            <i class="fas fa-users mr-2"></i>
-            Utilisateurs
-          </a>
+        
           <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
             <i class="fas fa-graduation-cap mr-2"></i>
             Cours
           </a>
-          <a href="#" class="border-transparent text-gray-600 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-800 block pl-3 pr-4 py-2 border-l-4 text-base font-medium">
-            <i class="fas fa-folder mr-2"></i>
-            Catégories
-          </a>
+        
         </div>
         <div class="pt-4 pb-3 border-t border-gray-200">
           <div class="flex items-center px-4">
@@ -261,25 +229,20 @@ if (isset($_SESSION['message'])) {
       </div>
     </nav>
 
-<!-- En-tête -->
 <header class="bg-white shadow mt-16">
       <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <h1 class="text-3xl font-bold text-gray-900">Tableau de Bord</h1>
       </div>
     </header>
 
-    <!-- Contenu principal -->
     <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-      <!-- Alert Message -->
       <?php if ($message): ?>
         <div class="mb-4 rounded-md p-4 <?php echo $messageType === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'; ?>">
           <?php echo htmlspecialchars($message); ?>
         </div>
       <?php endif; ?>
 
-      <!-- Cartes statistiques -->
       <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <!-- Étudiants -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -303,7 +266,6 @@ if (isset($_SESSION['message'])) {
           </div>
         </div>
 
-        <!-- Enseignants -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -322,12 +284,11 @@ if (isset($_SESSION['message'])) {
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <a href="#" class="font-medium text-green-600 hover:text-green-500">Voir tous</a>
+              <a href="allEnseignement.php" class="font-medium text-green-600 hover:text-green-500">Voir tous</a>
             </div>
           </div>
         </div>
 
-        <!-- Validations en attente -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -346,12 +307,11 @@ if (isset($_SESSION['message'])) {
           </div>
           <div class="bg-gray-50 px-5 py-3">
             <div class="text-sm">
-              <a href="#" class="font-medium text-yellow-600 hover:text-yellow-500">Traiter</a>
+              <a href="allEnseignement.php" class="font-medium text-yellow-600 hover:text-yellow-500">Voir tous</a>
             </div>
           </div>
         </div>
 
-        <!-- Total Enseignants -->
         <div class="bg-white overflow-hidden shadow rounded-lg">
           <div class="p-5">
             <div class="flex items-center">
@@ -376,7 +336,6 @@ if (isset($_SESSION['message'])) {
         </div>
       </div>
 
-      <!-- Section des validations en attente -->
       <div class="mt-8">
         <div class="bg-white shadow rounded-lg">
           <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
@@ -446,7 +405,64 @@ if (isset($_SESSION['message'])) {
         </div>
       </div>
 
-      <!-- Section des catégories -->
+      <div class="mt-8">
+        <div class="bg-white shadow rounded-lg">
+          <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div class="flex items-center">
+              <i class="fas fa-book text-blue-500 text-xl mr-3"></i>
+              <h3 class="text-lg leading-6 font-medium text-gray-900">Cours En Attente</h3>
+            </div>
+            <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              <?php echo count($pendingCourses); ?> en attente
+            </span>
+          </div>
+          <div class="border-t border-gray-200">
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Titre</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Enseignant</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Statut</th>
+                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <?php foreach ($pendingCourses as $course): ?>
+                    <tr class="hover:bg-gray-50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900">
+                          <?php echo htmlspecialchars($course['titre']); ?>
+                        </div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900"><?php echo htmlspecialchars($course['enseignant_nom']); ?></div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                          <?php echo $course['statut']; ?>
+                        </span>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <form action="all_courses.php" class="inline-flex space-x-2">
+                    
+                          <button  name="action" value="approve"
+                            class="inline-flex items-center px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                            <i class="fas fa-check mr-2"></i>
+                            Voir 
+                          </button>
+                        
+                        </form>
+                      </td>
+                    </tr>
+                  <?php endforeach; ?>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="mt-8">
         <div class="bg-white shadow rounded-lg">
           <div class="px-4 py-5 sm:px-6 flex justify-between items-center">

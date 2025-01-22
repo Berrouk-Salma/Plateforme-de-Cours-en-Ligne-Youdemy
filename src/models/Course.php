@@ -12,7 +12,7 @@ class Course
     protected $id_enseignant;
     protected $statut;
 
-    public function __construct($titre, $description, $contenu, $type_contenu, $id_categorie, $id_enseignant, $statut)
+    public function __construct($titre = null, $description = null, $contenu = null, $type_contenu = null, $id_categorie = null, $id_enseignant = null, $statut = null)
     {
         $this->titre = $titre;
         $this->description = $description;
@@ -51,12 +51,136 @@ class Course
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function getCourseWithDetails($courseId)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+    
+        $query = "
+            SELECT 
+                c.*,
+                cat.nom as category_name,
+                u.nom as enseignant_nom,
+                COUNT(DISTINCT i.id_etudiant) as nombre_etudiants,
+                GROUP_CONCAT(DISTINCT t.nom) as tags
+            FROM cours c
+            LEFT JOIN categories cat ON c.id_categorie = cat.id_categorie
+            LEFT JOIN utilisateurs u ON c.id_enseignant = u.id
+            LEFT JOIN inscriptions i ON c.id = i.id_cours
+            LEFT JOIN cours_tags ct ON c.id = ct.id_cours
+            LEFT JOIN tags t ON ct.id_tag = t.id_tag
+            WHERE c.id = :course_id
+            GROUP BY c.id";
+    
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':course_id', $courseId);
+        $stmt->execute();
+    
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function isEnrolled($userId, $courseId)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
+        $stmt = $conn->prepare("
+            SELECT COUNT(*) as count 
+            FROM inscriptions 
+            WHERE id_etudiant = :user_id 
+            AND id_cours = :course_id
+        ");
+        
+        $stmt->bindParam(':user_id', $userId);
+        $stmt->bindParam(':course_id', $courseId);
+        $stmt->execute();
+        
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $result['count'] > 0;
+    }
+
+    public function getAllCoursesWithDetails( $search)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
+        $query = "
+            SELECT 
+                c.*,
+                cat.nom as category_name,
+                u.nom as enseignant_nom,
+                COUNT(DISTINCT i.id_etudiant) as nombre_etudiants,
+                GROUP_CONCAT(DISTINCT t.nom) as tags
+            FROM cours c
+            LEFT JOIN categories cat ON c.id_categorie = cat.id_categorie
+            LEFT JOIN utilisateurs u ON c.id_enseignant = u.id
+            LEFT JOIN inscriptions i ON c.id = i.id_cours
+            LEFT JOIN cours_tags ct ON c.id = ct.id_cours
+            LEFT JOIN tags t ON ct.id_tag = t.id_tag
+             WHERE c.statut = 'actif' ";
+
+      
+
+
+        $query .= " GROUP BY c.id ORDER BY c.id DESC";
+
+        $stmt = $conn->prepare($query);
+      
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function getAllTags()
     {
         $db = Database::getInstance();
         $conn = $db->getConnection();
 
         $stmt = $conn->prepare("SELECT id_tag, nom FROM tags");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAllCours()
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM cours");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateCourseStatus($courseId, $status)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+    
+        try {
+            $stmt = $conn->prepare("UPDATE cours SET statut = :status WHERE id = :id");
+            $stmt->bindParam(':status', $status);
+            $stmt->bindParam(':id', $courseId);
+            $stmt->execute();
+            return true;
+        } catch (PDOException $e) {
+            throw new Exception('Erreur lors de la mise à jour du statut du cours: ' . $e->getMessage());
+        }
+    }
+
+    public function getCoursesByStatus($status)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
+        $query = "
+            SELECT c.*, u.nom as enseignant_nom
+            FROM cours c
+            LEFT JOIN utilisateurs u ON c.id_enseignant = u.id
+            WHERE c.statut = :status
+        ";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':status', $status);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

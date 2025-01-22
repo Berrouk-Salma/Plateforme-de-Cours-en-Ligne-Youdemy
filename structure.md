@@ -29,12 +29,21 @@ youdemy/
 │   │   │   └── tags.php
 │   │   │   
 │   │   ├── ensieignant/
-│   │   │   ├── ajouterCours.php
+│   │   │   ├─ ajouterCours.php
 │   │   │   ├── dashboard.php
+│   │   │   ├── delete_course.php
+│   │   │   ├── edit_course.php
+│   │   │   ├── edit_course.php
+│   │   │   ├── view_course.php
 │   │   │   └── myCourses.php
 │   │   └── etudiant/
 │   │       ├── dashboard.php
+│   │       ├── aboutCours.php
 │   │       ├── users.php
+│   │       ├── allCourses.php
+│   │       ├── sinscrire.php
+│   │       ├── allCourses.php
+│   │       ├── course_details.php
 │   │       └── myCourses.php      
 │   │            
 │   └──index.php        

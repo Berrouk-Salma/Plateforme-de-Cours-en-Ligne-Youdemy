@@ -1,6 +1,9 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../models/User.php';
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once __DIR__ . '/../../../src/models/Auth.php';
 
 $error = '';
 
@@ -9,17 +12,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
 
     if (!empty($email) && !empty($password)) {
-        // Hash the password before checking
-        $hashedPassword = hash('sha256', $password);
-
         try {
-            $userModel = new User(null, null, null, null, null);
-            $user = $userModel->login($email, $hashedPassword);
+            $auth = new Auth();
+            $result = $auth->login($email, $password);
 
-            if ($user && $user['status'] === 'actif') {
-                $_SESSION['user'] = $user;
+            if (isset($result['success'])) {
+                 $user = $_SESSION['user'];
 
-                // Redirect based on role
+                
                 switch ($user['role']) {
                     case 'admin':
                         header('Location: ../admin/dashboard.php');
@@ -35,9 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 exit();
             } else {
-                $error = "Invalid email or password, or your account is not active ";
-            
-            
+                $error = $result['error'];
             }
         } catch (Exception $e) {
             $error = 'An error occurred while trying to log in';
@@ -47,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="en" class="h-full bg-gray-50">
 <head>
@@ -57,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        /* Custom animations */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -199,7 +195,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Password validation
             if (password.length < 1) {
                 isValid = false;
-                alert('Password must be at least 6 characters long');
+                alert('Please enter your password');
             }
 
             if (!isValid) {

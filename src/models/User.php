@@ -19,6 +19,17 @@ class User
         $this->status = $status;
     }
 
+    public static function findById($id)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+
+        $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE id = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function register()
     {
         $db = Database::getInstance();
@@ -30,22 +41,21 @@ class User
         $stmt->bindParam(':password', $this->password);
         $stmt->bindParam(':role', $this->role);
         $stmt->bindParam(':status', $this->status);
-        $stmt->execute();
+        return $stmt->execute();
     }
 
-    public function login($email, $password)
+    public static function findByEmail($email)
     {
         $db = Database::getInstance();
         $conn = $db->getConnection();
 
-        $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE email = :email AND password = :password");
+        $stmt = $conn->prepare("SELECT * FROM utilisateurs WHERE email = :email");
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':password', $password);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public static function findByEmail($email)
+    public function login($email)
     {
         $db = Database::getInstance();
         $conn = $db->getConnection();
