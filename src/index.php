@@ -2,23 +2,18 @@
 require_once __DIR__ . '/config/connection.php';
 require_once __DIR__ . '/models/Course.php';
 
-// Initialize Course model
 $courseModel = new Course();
 
-// Handle search
 $search = isset($_GET['search']) ? $_GET['search'] : '';
 
-// Pagination
 $coursesPerPage = 6;
 $currentPage = isset($_GET['page']) ? (int)$_GET['page'] : 1;
 $offset = ($currentPage - 1) * $coursesPerPage;
 
-// Get courses with search and pagination
 $courses = $courseModel->getAllCoursesWithDetails( $search);
 $totalCourses = count($courses);
 $totalPages = ceil($totalCourses / $coursesPerPage);
 
-// Slice the courses array for current page
 $currentCourses = array_slice($courses, $offset, $coursesPerPage);
 ?>
 
@@ -55,7 +50,7 @@ $currentCourses = array_slice($courses, $offset, $coursesPerPage);
             </div>
         </div>
 
-        <!-- Search Section -->
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <form method="GET" action="" class="relative">
                 <input
@@ -72,7 +67,7 @@ $currentCourses = array_slice($courses, $offset, $coursesPerPage);
             </form>
         </div>
 
-        <!-- Course Grid -->
+
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <?php if (empty($currentCourses)): ?>
                 <div class="text-center py-8">
@@ -99,7 +94,7 @@ $currentCourses = array_slice($courses, $offset, $coursesPerPage);
                     <?php endforeach; ?>
                 </div>
 
-                <!-- Pagination -->
+
                 <?php if ($totalPages > 1): ?>
     <div class="flex justify-center space-x-2 mt-8">
         <?php for ($i = 1; $i <= $totalPages; $i++): ?>

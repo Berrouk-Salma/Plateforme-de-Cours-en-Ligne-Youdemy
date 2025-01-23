@@ -38,7 +38,7 @@ class Auth
                 $_SESSION['user'] = $user;
                 return ['success' => 'Vous êtes maintenant connecté.'];
             } else {
-                return ['error' => 'Votre compte est suspendu.'];
+                return ['error' => 'Votre compte est attente dactivation.'];
             }
         }
         return ['error' => 'Identifiants invalides.'];

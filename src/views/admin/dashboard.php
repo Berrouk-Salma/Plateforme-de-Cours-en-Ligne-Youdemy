@@ -14,7 +14,7 @@ if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'admin') {
 $message = '';
 $messageType = '';
 
-// Handle category form submissions
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
   $admin = new Admin($_SESSION['user']['nom'], $_SESSION['user']['email'], '', 'admin', 'actif');
   switch ($_POST['action']) {
@@ -92,7 +92,7 @@ try {
 
   $categories = Category::getAllCategoriesWithStats();
 
-  // Get pending courses
+
   
   $courseModel = new Course(null, null, null, null, null, null, null);
   $pendingCourses = $courseModel->getCoursesByStatus('en_attente');
@@ -127,11 +127,9 @@ if (isset($_SESSION['message'])) {
 
 <body class="h-full">
   <div class="min-h-full">
-    <!-- Navigation -->
     <nav class="bg-white border-b border-gray-200 fixed w-full z-30 top-0">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
-          <!-- Logo et liens de navigation -->
           <div class="flex">
             <div class="flex-shrink-0 flex items-center">
               <h2 class="text-xl ">Youdemy</h2>
@@ -259,11 +257,7 @@ if (isset($_SESSION['message'])) {
               </div>
             </div>
           </div>
-          <div class="bg-gray-50 px-5 py-3">
-            <div class="text-sm">
-              <a href="#" class="font-medium text-indigo-600 hover:text-indigo-500">Voir tous</a>
-            </div>
-          </div>
+      
         </div>
 
         <div class="bg-white overflow-hidden shadow rounded-lg">
@@ -533,7 +527,6 @@ if (isset($_SESSION['message'])) {
       mobileMenu.classList.toggle('hidden');
     }
 
-    // Close dropdowns when clicking outside
     document.addEventListener('click', function(event) {
       const profileDropdown = document.getElementById('profile-dropdown');
       const profileButton = document.getElementById('user-menu-button');
@@ -543,16 +536,13 @@ if (isset($_SESSION['message'])) {
       }
     });
 
-    // Search functionality
     const searchInput = document.getElementById('search');
     if (searchInput) {
       searchInput.addEventListener('input', function(e) {
         const searchTerm = e.target.value.toLowerCase();
-        // Add your search logic here
       });
     }
 
-  // Add smooth transition for alerts
   const alerts = document.querySelectorAll('.alert');
     alerts.forEach(alert => {
       setTimeout(() => {

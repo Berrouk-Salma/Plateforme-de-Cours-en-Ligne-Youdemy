@@ -4,8 +4,9 @@ require_once __DIR__ . '/Category.php';
 require_once __DIR__ . '/User.php';
 require_once __DIR__ . '/Course.php';
 require_once __DIR__ . '/Tag.php';
+require_once __DIR__ . '/GetCourses.php';
 
-class Enseignant extends User
+class Enseignant extends User implements GetCourses
 {
     protected $id;
 
@@ -19,7 +20,33 @@ class Enseignant extends User
         return $this->id;
     }
 
-
+    public function getCourseAllStatus($courseId)
+    {
+        $db = Database::getInstance();
+        $conn = $db->getConnection();
+    
+        $query = "
+            SELECT 
+                c.*,
+                cat.nom as category_name,
+                u.nom as enseignant_nom,
+                COUNT(DISTINCT i.id_etudiant) as nombre_etudiants,
+                GROUP_CONCAT(DISTINCT t.nom) as tags
+            FROM cours c
+            LEFT JOIN categories cat ON c.id_categorie = cat.id_categorie
+            LEFT JOIN utilisateurs u ON c.id_enseignant = u.id
+            LEFT JOIN inscriptions i ON c.id = i.id_cours
+            LEFT JOIN cours_tags ct ON c.id = ct.id_cours
+            LEFT JOIN tags t ON ct.id_tag = t.id_tag
+            WHERE c.id = :course_id
+            GROUP BY c.id";
+    
+        $stmt = $conn->prepare($query);
+        $stmt->bindParam(':course_id', $courseId);
+        $stmt->execute();
+    
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     public function getMyCourses()
     {
         $db = Database::getInstance();
@@ -124,7 +151,6 @@ class Enseignant extends User
             
             $conn->beginTransaction();
 
-            // Update course details
             $stmt = $conn->prepare("UPDATE cours 
                                   SET titre = :titre, 
                                       description = :description, 
@@ -144,7 +170,7 @@ class Enseignant extends User
                 ':id_enseignant' => $this->id
             ]);
 
-            // Update tags
+      
             $this->supprimerTagsDeCours($idCours);
             foreach ($tags as $tagName) {
                 $tag = new Tag($tagName);
@@ -187,7 +213,6 @@ class Enseignant extends User
 
             $conn->beginTransaction();
 
-            // Verify course belongs to teacher
             $stmt = $conn->prepare("SELECT id FROM cours 
                                   WHERE id = :id 
                                   AND id_enseignant = :id_enseignant");
@@ -200,7 +225,6 @@ class Enseignant extends User
                 throw new Exception('Cours non trouvé ou non autorisé');
             }
 
-            // Delete related records
             $this->supprimerTagsDeCours($idCours);
             
             $stmt = $conn->prepare("DELETE FROM inscriptions 
@@ -311,7 +335,7 @@ public function getCourseTags($courseId)
         $conn = $db->getConnection();
 
         $stmt = $conn->prepare("
-            SELECT t.id_tag, t.nom
+            SELECT t.id_tag, t.nom AS nom
             FROM tags t
             JOIN cours_tags ct ON t.id_tag = ct.id_tag
             WHERE ct.id_cours = :id_cours
@@ -321,16 +345,10 @@ public function getCourseTags($courseId)
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     } catch (PDOException $e) {
-        // En cas d'erreur, retourner un tableau vide
         error_log('Error fetching course tags: ' . $e->getMessage());
         return [];
     }
 }
-
-
-
-
-
 
 public function getEnrollmentsForCourse($courseId)
 {
@@ -359,14 +377,11 @@ public function ajouterCours($titre, $description, $contenu, $type_contenu, $id_
         $db = Database::getInstance();
         $conn = $db->getConnection();
         
-        // Begin transaction
         $conn->beginTransaction();
 
-        // Create the course with status 'en_attente'
         $cours = new Course($titre, $description, $contenu, $type_contenu, $id_categorie, $this->id, 'en_attente');
         $coursId = $cours->create();
 
-        // Add tags
         if (!empty($tags)) {
             foreach ($tags as $tagName) {
                 $tag = new Tag($tagName);

@@ -3,15 +3,13 @@ session_start();
 require_once __DIR__ . '/../../models/Course.php';
 require_once __DIR__ . '/../../models/Enseignant.php';
 
-// Authentication check
 if (!isset($_SESSION['user']) || $_SESSION['user']['role'] !== 'enseignant') {
     header('Location: ../auth/login.php');
     exit();
 }
 
-// Initialize models
 $enseignant = new Enseignant($_SESSION['user']['id']);
-$courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
+$courses = $enseignant->getMesCours(); 
 ?>
 
 <!DOCTYPE html>
@@ -29,9 +27,7 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
 </head>
 <body class="h-full">
     <div class="min-h-screen bg-gray-50 flex">
-        <!-- Sidebar -->
         <aside class="hidden lg:flex lg:flex-col lg:w-72 lg:fixed lg:inset-y-0 bg-white border-r border-gray-200">
-            <!-- Logo -->
             <div class="flex items-center h-16 px-6 border-b border-gray-200 bg-white">
                 <div class="flex items-center gap-2">
                     <div class="bg-indigo-600 p-2 rounded-lg">
@@ -41,7 +37,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                 </div>
             </div>
 
-            <!-- Navigation -->
             <nav class="flex-1 px-4 py-6 space-y-8 overflow-y-auto">
                 <div>
                     <h3 class="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Main</h3>
@@ -69,7 +64,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                 </div>
             </nav>
 
-            <!-- Profile Section -->
             <div class="border-t border-gray-200 p-4">
                 <div class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50">
           
@@ -84,9 +78,7 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
             </div>
         </aside>
 
-        <!-- Main Content -->
         <div class="lg:pl-72 flex flex-col flex-1">
-            <!-- Top Navigation -->
             <header class="sticky top-0 z-10 bg-white border-b border-gray-200">
                 <div class="px-4 sm:px-6 lg:px-8 py-4">
                     <div class="flex items-center justify-between">
@@ -102,7 +94,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                         </div>
 
                         <div class="flex items-center gap-4">
-                            <!-- Bouton de déconnexion -->
                             <a href="../auth/logout.php" class="flex items-center gap-2 p-2 rounded-lg hover:bg-gray-50">
                                 <i class="fas fa-sign-out-alt text-gray-600"></i>
                                 <span class="hidden sm:block font-medium text-sm text-gray-700">Logout</span>
@@ -113,18 +104,14 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                 </div>
             </header>
 
-            <!-- Page Content -->
             <main class="flex-1 p-6">
-                <!-- Welcome Section -->
                 <div class="mb-8">
                     <h1 class="text-2xl font-bold text-gray-900">My Courses</h1>
                     <p class="mt-2 text-sm text-gray-600">Manage your courses and view details.</p>
                 </div>
 
-                <!-- Courses List -->
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <?php foreach ($courses as $course): ?>
-                        <!-- Course Card -->
                         <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-all">
                             <img src="https://via.placeholder.com/300x200" alt="Course Image" class="w-full h-48 object-cover rounded-t-xl">
                             <div class="p-4">
@@ -134,8 +121,8 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                                     <span class="text-sm text-gray-500">Tags:</span>
                                     <div class="flex space-x-2 ml-2">
                                         <?php
-                                        // Fetch tags for the course
                                         $courseTags = $enseignant->getCourseTags($course['id']);
+                                        // Fetch tags for the course
                                         foreach ($courseTags as $tag): ?>
                                             <span class="bg-indigo-100 text-indigo-800 text-xs font-medium mr-2 px-2.5 py-0.5 rounded">
                                                 <?php echo htmlspecialchars($tag['nom']); ?>
@@ -144,16 +131,13 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                                     </div>
                                 </div>
                                 <div class="flex justify-between mt-4">
-                                    <!-- Edit Button -->
                                     <a href="edit_course.php?id=<?php echo $course['id']; ?>" class="text-indigo-600 hover:text-indigo-500">
                                         <i class="fas fa-edit"></i> Edit
                                     </a>
-                                    <!-- Delete Button -->
                                     <button class="text-red-600 hover:text-red-500" onclick="confirmDelete(<?php echo $course['id']; ?>)">
                                         <i class="fas fa-trash"></i> Delete
                                     </button>
                                 </div>
-                                <!-- View Video Button -->
                                 <?php if ($course['type_contenu'] === 'video'): ?>
                                     <div class="mt-4">
                                         <button onclick="openVideoModal('<?php echo htmlspecialchars($course['contenu']); ?>')" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700">
@@ -161,7 +145,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
                                         </button>
                                     </div>
                                 <?php endif; ?>
-                                <!-- View Enrollments Button -->
                                 <div class="mt-4">
                                     <a href="view_course.php?id=<?php echo $course['id']; ?>" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700">
                                         <i class="fas fa-users mr-2"></i> Voir les inscriptions
@@ -175,7 +158,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
         </div>
     </div>
 
-    <!-- Modal for Delete Confirmation -->
     <div id="deleteModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
         <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -195,7 +177,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
         </div>
     </div>
 
-    <!-- Modal for Video -->
     <div id="videoModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full">
         <div class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white">
             <div class="mt-3 text-center">
@@ -215,7 +196,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
     </div>
 
     <script>
-        // Mobile menu toggle
         const menuButton = document.querySelector('button');
         const sidebar = document.querySelector('aside');
 
@@ -223,14 +203,12 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
             sidebar.classList.toggle('hidden');
         });
 
-        // Close mobile menu when clicking outside
         document.addEventListener('click', (e) => {
             if (!sidebar.contains(e.target) && !menuButton.contains(e.target)) {
                 sidebar.classList.add('hidden');
             }
         });
 
-        // Delete Course Functionality
         let courseIdToDelete = null;
 
         function confirmDelete(courseId) {
@@ -248,7 +226,6 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
             document.getElementById('deleteModal').classList.add('hidden');
         });
 
-        // Video Modal Functionality
         function openVideoModal(videoId) {
             const iframe = document.getElementById('videoIframe');
             iframe.src = `https://www.youtube.com/embed/${videoId}`;
@@ -257,7 +234,7 @@ $courses = $enseignant->getMesCours(); // Fetch courses created by the teacher
 
         function closeVideoModal() {
             const iframe = document.getElementById('videoIframe');
-            iframe.src = ''; // Stop the video
+            iframe.src = ''; 
             document.getElementById('videoModal').classList.add('hidden');
         }
     </script>
