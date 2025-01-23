@@ -14,15 +14,7 @@ CREATE TABLE utilisateurs (
 
 
 
--- ensiei -> cours tag category
--- SELECT utilisateurs.nom ,tag
--- FROM cours
--- JOIN cours ON utilisateurs.id = cours.id_enseignant
--- JOIN categories ON cours.id_categorie = categories.id;
 
-SELECT utilisateurs.nom ,cours.titre
-FROM utilisateurs
-JOIN cours ON utilisateurs.id = cours.id_enseignant 
 
 
 
