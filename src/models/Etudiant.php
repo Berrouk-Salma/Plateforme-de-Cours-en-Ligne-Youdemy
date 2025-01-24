@@ -55,7 +55,7 @@ public function getCourseAllStatus($courseId)
         LEFT JOIN tags t ON ct.id_tag = t.id_tag
         WHERE c.id = :course_id
         GROUP BY c.id ";
-        // WHERE c.status = 'actif'";
+        //  WHERE c.status = 'actif'";
     
 
     $stmt = $conn->prepare($query);

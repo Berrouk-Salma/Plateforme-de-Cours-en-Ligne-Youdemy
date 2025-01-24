@@ -39,7 +39,9 @@ class Enseignant extends User implements GetCourses
             LEFT JOIN cours_tags ct ON c.id = ct.id_cours
             LEFT JOIN tags t ON ct.id_tag = t.id_tag
             WHERE c.id = :course_id
-            GROUP BY c.id";
+            GROUP BY c.id
+            
+            ";
     
         $stmt = $conn->prepare($query);
         $stmt->bindParam(':course_id', $courseId);

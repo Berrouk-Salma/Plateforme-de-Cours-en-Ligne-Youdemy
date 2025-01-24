@@ -1,3 +1,4 @@
+-- Active: 1734980278632@@127.0.0.1@3306@youdemy
 DROP DATABASE IF EXISTS youdemy;
 CREATE DATABASE youdemy;
 USE youdemy;
@@ -14,9 +15,21 @@ CREATE TABLE utilisateurs (
 
 
 
+SELECT U.nom , COUNT(C.id) AS nbr_cours
+FROM utilisateurs U JOIN cours C ON U.id = C.id_enseignant
+GROUP BY U.id
+ORDER BY nbr_cours DESC
+LIMIT 1;
+ 
+
+
+ 
 
 
 
+SELECT * FROM utilisateurs
+JOIN inscriptions ON utilisateurs.id = inscriptions.id_etudiant
+GROUP BY utilisateurs.id
 
 
 
@@ -98,3 +111,21 @@ SELECT utilisateurs.nom FROM utilisateurs
 JOIN inscriptions ON utilisateurs.id =  inscriptions.id_etudiant
 JOIN cours ON inscriptions.id_cours = cours.id
 WHERE cours.titre LIKE '%Mollit%';
+
+SELECT utilisateurs.nom , cours.titre 
+FROM utilisateurs
+join cours on utilisateurs.id =cours.id_enseignant 
+
+
+SELECT utilisateurs.nom, cours.titre 
+FROM utilisateurs JOIN inscriptions ON utilisateurs.id = inscriptions.id_etudiant
+     JOIN cours ON cours.id = inscriptions.id_cours;
+
+
+     SELECT COUNT(DISTINCT utilisateurs.id) as total 
+from utilisateurs
+JOIN inscriptions on utilisateurs.id = inscriptions.id_etudiant;
+
+
+-- aficher le nomber des etudiant inscripte par chaque cours 
+-- select count(*) from inscriptions WHERE inscriptions=cours_etudiant;
